@@ -24,7 +24,7 @@ const Login = ({ setToken }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:4000/login`, {
+      const res = await fetch(`https://login-page-server.herokuapp.com/login`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -34,8 +34,13 @@ const Login = ({ setToken }) => {
       });
 
       const resJson = await res.json();
+      console.log(resJson);
 
-      setToken(resJson);
+      if (resJson.statusMessage === "UNREGISTERED") {
+        alert("Username or password is incorrect");
+        return;
+      }
+      if (resJson.statusMessage === "SUCCESS") setToken(resJson.token);
     } catch (err) {
       console.log(err.message);
     }

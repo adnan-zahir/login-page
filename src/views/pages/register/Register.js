@@ -27,7 +27,7 @@ const Register = () => {
     try {
       if (password !== scndPassword) return alert("Password does not match!");
 
-      const res = await fetch("http://localhost:4000/register", {
+      const res = await fetch("https://login-page-server.herokuapp.com/register", {
         method: "POST",
         headers: {
           Accept: "application/json",
