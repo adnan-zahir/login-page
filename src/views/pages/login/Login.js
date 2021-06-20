@@ -34,7 +34,6 @@ const Login = ({ setToken }) => {
       });
 
       const resJson = await res.json();
-      console.log(resJson);
 
       if (resJson.statusMessage === "UNREGISTERED") {
         alert("Username or password is incorrect");
