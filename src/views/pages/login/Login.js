@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import {
+  CAlert,
   CButton,
   CCard,
   CCardBody,
@@ -16,32 +17,26 @@ import {
   CRow,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import Auth from "src/Auth";
 
-const Login = ({ setToken }) => {
+const Login = ({
+  // setToken,
+  history,
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [alert, setAlert] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await fetch(`https://login-page-server.herokuapp.com/login`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const resJson = await res.json();
-
-      if (resJson.statusMessage === "UNREGISTERED") {
-        alert("Username or password is incorrect");
-        return;
-      }
-      if (resJson.statusMessage === "SUCCESS") setToken(resJson.token);
+      const userToken = await Auth.login(username, password);
+      // setToken(userInfo);
+      history.push("/");
+      return userToken;
     } catch (err) {
-      console.log(err.message);
+      setAlert(err.message);
     }
   };
 
@@ -90,6 +85,13 @@ const Login = ({ setToken }) => {
                         }}
                       />
                     </CInputGroup>
+                    <CRow>
+                      <CCol>
+                        <CAlert color="danger" fade show={!!alert}>
+                          {alert}
+                        </CAlert>
+                      </CCol>
+                    </CRow>
                     <CRow>
                       <CCol xs="6">
                         <CButton
@@ -143,7 +145,8 @@ const Login = ({ setToken }) => {
 };
 
 Login.propTypes = {
-  setToken: PropTypes.func.isRequired,
+  // setToken: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 export default Login;

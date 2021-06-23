@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  CAlert,
   CButton,
   CCard,
   CCardBody,
@@ -20,30 +21,36 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [scndPassword, setScndPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [alertText, setAlertText] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      if (password !== scndPassword) return alert("Password does not match!");
+      if (password !== scndPassword)
+        return setAlertText("Password does not match!");
 
-      const res = await fetch("https://login-page-server.herokuapp.com/register", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password, email }),
-      });
+      const res = await fetch(
+        // "https://login-page-server.herokuapp.com/register",
+        "http://localhost:4000/register",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, email }),
+        }
+      );
 
       const resJson = await res.json();
 
       if (resJson.statusMessage === "SUCCESS")
         return (window.location.hash = "/login");
       else if (resJson.statusMessage === "UNAVAILABLE")
-        return alert("Username or Email is not available");
+        throw new Error("Username or Email is not available");
     } catch (err) {
-      console.log(err.message);
+      setAlertText(err.message);
     }
   };
 
@@ -119,6 +126,9 @@ const Register = () => {
                       }}
                     />
                   </CInputGroup>
+                  {alertText !== "" && (
+                    <CAlert color="danger">{alertText}</CAlert>
+                  )}
                   <CButton color="success" block onClick={handleRegister}>
                     Create Account
                   </CButton>
