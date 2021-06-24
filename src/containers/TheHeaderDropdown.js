@@ -53,7 +53,7 @@ const TheHeaderDropdown = (props) => {
         >
           <strong>Settings</strong>
         </CDropdownItem> */}
-        <CDropdownItem>
+        <CDropdownItem to="/profile">
           <CIcon name="cil-user" className="mfe-2" />
           Profile
         </CDropdownItem>
