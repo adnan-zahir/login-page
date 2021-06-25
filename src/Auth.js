@@ -1,6 +1,6 @@
 class Auth {
   constructor() {
-    this._baseUrl = "http://localhost:4000";
+    this._baseUrl = "https://login-page-server.herokuapp.com/login";
   }
 
   async login(username, password) {
