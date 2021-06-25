@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CRow, CCol, CCard, CCardHeader, CCardBody, CImg, CCardText, CCardTitle, CCollapse, CForm, CFormGroup, CInput, CLabel, CFormText, CButton } from "@coreui/react";
+import { CRow, CCol, CCard, CCardHeader, CCardBody, CImg, CCardText, CCardTitle, CCollapse, CForm, CFormGroup, CInput, CLabel, CTextarea, CAlert, CButton } from "@coreui/react";
 import Auth from '../../Auth';
 import CIcon from "@coreui/icons-react";
 
@@ -15,7 +15,7 @@ const Profile = () => {
     address: '',
     city: '',
   });
-  const [alertText, setAlertText] = useState('')
+  const [alertText, setAlertText] = useState({ message: '', color: 'danger' });
 
   const [inputMobileNo, setInputMobileNo] = useState('');
   const [inputFullName, setInputFullName] = useState('');
@@ -23,6 +23,15 @@ const Profile = () => {
   const [inputCity, setInputCity] = useState('');
   const [inputPassword, setInputPassword] = useState('');
   const [inputRePassword, setInputRePassword] = useState('');
+  const [inputBio, setInputBio] = useState('');
+
+  const showAlert = (text, color = 'danger') => {
+    setAlertText({ message: text, color });
+    const alertTimeout = setTimeout(() => {
+      setAlertText({ message: '', color});
+      clearTimeout(alertTimeout);
+    }, 10000);
+  }
 
   const handleChange = (e) => {
     const { name: stateName, value } = e.target;
@@ -44,8 +53,36 @@ const Profile = () => {
         break;
       case 'INPUTREPASSWORD':
         setInputRePassword(value);
+        break;
+      case 'INPUTBIO':
+        setInputBio(value);
+        break;
       default:
         return;
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (inputPassword !== inputRePassword) {
+      showAlert('Password doesn\'t match');
+      return;
+    }
+    const dataToSubmit = {
+      mobile_no: inputMobileNo,
+      full_name: inputFullName,
+      address: inputAddress,
+      city: inputCity,
+      password: inputPassword,
+      bio: inputBio,
+    }
+
+    try {
+      const credentials = await Auth.updateProfile(dataToSubmit);
+      setUserInfo(credentials);
+      showAlert('Success!', 'success');
+    } catch (err) {
+      showAlert(err.message);
     }
   }
 
@@ -56,7 +93,7 @@ const Profile = () => {
 
         setUserInfo(credentials);
       } catch (err) {
-        setAlertText(err.message);
+        showAlert(err.message);
       }
     }
 
@@ -70,6 +107,7 @@ const Profile = () => {
     setInputCity(userInfo.city);
     setInputPassword(userInfo.password);
     setInputRePassword(userInfo.password);
+    setInputBio(userInfo.bio);
   }, [userInfo]);
 
   return (
@@ -115,7 +153,7 @@ const Profile = () => {
                   </CCol>
                   <CCol md="8" className="d-flex align-items-center">
                     <CCardBody>
-                      <CCardText>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</CCardText>
+                      <CCardText>{userInfo.bio}</CCardText>
                     </CCardBody>
                   </CCol>
                 </CRow>
@@ -137,7 +175,7 @@ const Profile = () => {
             <CCollapse show={!isEditMode}>
               <CCardBody>
                 <CRow>
-                  <CCol sm="6" className="d-flex flex-column">
+                  <CCol sm="6" className="d-flex flex-column justify-content-between">
                     <div>
                       <h4>Username</h4>
                       <h5 className="font-weight-normal">{userInfo.username}</h5>
@@ -151,7 +189,7 @@ const Profile = () => {
                       <h5 className="font-weight-normal">{userInfo.mobile_no}</h5>
                     </div>
                   </CCol>
-                  <CCol sm="6" className="d-flex flex-column">
+                  <CCol sm="6" className="d-flex flex-column justify-content-between">
                     <div>
                       <h4>Nama Lengkap</h4>
                       <h5 className="font-weight-normal">{userInfo.full_name}</h5>
@@ -172,7 +210,7 @@ const Profile = () => {
           <CCard>
             <CCollapse show={isEditMode}>
               <CCardBody>
-                <CForm onSubmit={(e) => e.preventDefault()}>
+                <CForm onSubmit={handleSubmit}>
                   <CRow>
                     <CCol sm="6" className="d-flex flex-column g-2">
                       <CFormGroup>
@@ -186,10 +224,6 @@ const Profile = () => {
                       <CFormGroup>
                         <CLabel>No. Tlp</CLabel>
                         <CInput type="text" name="inputMobileNo" value={inputMobileNo} onChange={handleChange} />
-                      </CFormGroup>
-                      <CFormGroup>
-                        <CLabel>Password</CLabel>
-                        <CInput type="password" name="inputPassword" value={inputPassword} onChange={handleChange} />
                       </CFormGroup>
                     </CCol>
                     <CCol sm="6">
@@ -205,10 +239,29 @@ const Profile = () => {
                         <CLabel>Kota</CLabel>
                         <CInput type="text" name="inputCity" value={inputCity} onChange={handleChange} />
                       </CFormGroup>
-                      <CFormGroup>
-                        <CLabel>Re-type Password</CLabel>
-                        <CInput type="password" name="inputRePassword" value={inputRePassword} onChange={handleChange} />
-                      </CFormGroup>
+                    </CCol>
+                    <CCol lg="12">
+                      <CRow>
+                        <CCol md="6">
+                          <CFormGroup>
+                            <CLabel>Password</CLabel>
+                            <CInput type="password" name="inputPassword" value={inputPassword} onChange={handleChange} />
+                          </CFormGroup>
+                        </CCol>
+                        <CCol md="6">
+                          <CFormGroup>
+                            <CLabel>Re-type Password</CLabel>
+                            <CInput type="password" name="inputRePassword" value={inputRePassword} onChange={handleChange} />
+                          </CFormGroup>
+                        </CCol>
+                        <CCol xs="12">
+                          <CTextarea value={inputBio} name="inputBio" onChange={handleChange}></CTextarea>
+                        </CCol>
+                        <CCol>
+                          {alertText.message !== '' && <CAlert color={alertText.color}>{alertText.message}</CAlert>
+}
+                        </CCol>
+                      </CRow>
                     </CCol>
                   </CRow>
                 </CForm>
@@ -220,7 +273,7 @@ const Profile = () => {
                   <CButton size="lg" color="danger" className="mr-2" onClick={() => setIsEditMode(false)}>
                     Cancel
                   </CButton>
-                  <CButton size="lg" color="info" onClick={() => setIsEditMode(false)}>
+                  <CButton size="lg" color="info" onClick={handleSubmit}>
                     Submit
                   </CButton>
                 </>

@@ -2,6 +2,7 @@ class Auth {
   constructor() {
     this._baseUrl = "http://localhost:4000";
   }
+
   async login(username, password) {
     try {
       // FETCH POST LOGIN CREDENTIALS
@@ -68,6 +69,35 @@ class Auth {
         throw new Error("Account not found");
       } else {
         return res;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async updateProfile(dataToSubmit) {
+    const token = sessionStorage.getItem("token");
+
+    try {
+      const rawRes = await fetch(this._baseUrl + '/credentials', {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          credentials: dataToSubmit,
+        }),
+      });
+
+      const res = await rawRes.json();
+
+      if (res.statusMessage === 'UNREGISTERED') {
+        throw new Error('Update failed, try again later or re-login to your account');
+      }
+      if (res.statusMessage === 'SUCCESS') {
+        return res.credentials;
       }
     } catch (err) {
       throw err;
