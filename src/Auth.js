@@ -1,6 +1,6 @@
 class Auth {
   constructor() {
-    this._baseUrl = "https://login-page-server.herokuapp.com/login";
+    this._baseUrl = "https://login-page-server.herokuapp.com";
   }
 
   async login(username, password) {
@@ -40,6 +40,31 @@ class Auth {
   logout(cb) {
     sessionStorage.removeItem("token");
     if (cb) return cb();
+  }
+
+  async register({ username, password, email }) {
+    try {
+    const res = await fetch(
+      this._baseUrl + '/register',
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password, email }),
+      }
+    );
+
+    const resJson = await res.json();
+
+    if (resJson.statusMessage === "SUCCESS")
+      return (window.location.hash = "/login");
+    else if (resJson.statusMessage === "UNAVAILABLE")
+      throw new Error("Username or Email is not available");
+    } catch (err) {
+      throw err;
+    }
   }
 
   isAuthenticated() {

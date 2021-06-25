@@ -223,21 +223,21 @@ const Profile = () => {
                       </CFormGroup>
                       <CFormGroup>
                         <CLabel>No. Tlp</CLabel>
-                        <CInput type="text" name="inputMobileNo" value={inputMobileNo} onChange={handleChange} />
+                        <CInput type="text" name="inputMobileNo" value={inputMobileNo} onChange={handleChange} required />
                       </CFormGroup>
                     </CCol>
                     <CCol sm="6">
                       <CFormGroup>
                         <CLabel>Nama Lengkap</CLabel>
-                        <CInput type="text" name="inputFullName" value={inputFullName} onChange={handleChange} />
+                        <CInput type="text" name="inputFullName" value={inputFullName} onChange={handleChange} required />
                       </CFormGroup>
                       <CFormGroup>
                         <CLabel>Alamat</CLabel>
-                        <CInput type="text" name="inputAddress" value={inputAddress} onChange={handleChange} />
+                        <CInput type="text" name="inputAddress" value={inputAddress} onChange={handleChange} required />
                       </CFormGroup>
                       <CFormGroup>
                         <CLabel>Kota</CLabel>
-                        <CInput type="text" name="inputCity" value={inputCity} onChange={handleChange} />
+                        <CInput type="text" name="inputCity" value={inputCity} onChange={handleChange} required />
                       </CFormGroup>
                     </CCol>
                     <CCol lg="12">
@@ -245,13 +245,13 @@ const Profile = () => {
                         <CCol md="6">
                           <CFormGroup>
                             <CLabel>Password</CLabel>
-                            <CInput type="password" name="inputPassword" value={inputPassword} onChange={handleChange} />
+                            <CInput type="password" name="inputPassword" value={inputPassword} onChange={handleChange} required />
                           </CFormGroup>
                         </CCol>
                         <CCol md="6">
                           <CFormGroup>
                             <CLabel>Re-type Password</CLabel>
-                            <CInput type="password" name="inputRePassword" value={inputRePassword} onChange={handleChange} />
+                            <CInput type="password" name="inputRePassword" value={inputRePassword} onChange={handleChange} required />
                           </CFormGroup>
                         </CCol>
                         <CCol xs="12">

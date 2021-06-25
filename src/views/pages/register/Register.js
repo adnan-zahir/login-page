@@ -15,6 +15,7 @@ import {
   CRow,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
+import Auth from '../../../Auth.js'
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -28,27 +29,9 @@ const Register = () => {
 
     try {
       if (password !== scndPassword)
-        return setAlertText("Password does not match!");
+        throw new Error('Password doesn\'t match!');
 
-      const res = await fetch(
-        // "https://login-page-server.herokuapp.com/register",
-        "http://localhost:4000/register",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password, email }),
-        }
-      );
-
-      const resJson = await res.json();
-
-      if (resJson.statusMessage === "SUCCESS")
-        return (window.location.hash = "/login");
-      else if (resJson.statusMessage === "UNAVAILABLE")
-        throw new Error("Username or Email is not available");
+      await Auth.register({ username, email, password });
     } catch (err) {
       setAlertText(err.message);
     }
@@ -61,7 +44,7 @@ const Register = () => {
           <CCol md="9" lg="7" xl="6">
             <CCard className="mx-4">
               <CCardBody className="p-4">
-                <CForm>
+                <CForm onSubmit={handleRegister}>
                   <h1>Register</h1>
                   <p className="text-muted">Create your account</p>
                   <CInputGroup className="mb-3">
@@ -78,6 +61,7 @@ const Register = () => {
                       onChange={(e) => {
                         setUsername(e.target.value);
                       }}
+                      required
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
@@ -92,6 +76,7 @@ const Register = () => {
                       onChange={(e) => {
                         setEmail(e.target.value);
                       }}
+                      required
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
@@ -108,6 +93,7 @@ const Register = () => {
                       onChange={(e) => {
                         setPassword(e.target.value);
                       }}
+                      required
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-4">
@@ -124,12 +110,13 @@ const Register = () => {
                       onChange={(e) => {
                         setScndPassword(e.target.value);
                       }}
+                      required
                     />
                   </CInputGroup>
                   {alertText !== "" && (
                     <CAlert color="danger">{alertText}</CAlert>
                   )}
-                  <CButton color="success" block onClick={handleRegister}>
+                  <CButton type="submit" color="success" block>
                     Create Account
                   </CButton>
                 </CForm>
